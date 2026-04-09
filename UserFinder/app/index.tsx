@@ -1,10 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MySafeAreaView from "@/components/common/MySafeAreaView";
-import { Text, View, StyleSheet, TextInput } from "react-native";
+import { Text, View, StyleSheet, TextInput, FlatList } from "react-native";
 import { fontFamily } from "@/theme/fontFamily";
 import { LinearGradient } from "expo-linear-gradient";
+import UserCard from "@/components/user/UserCard";
+import { User } from "@/types/user";
+
 export default function Index() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]); // get the [{},{},{}] arry of obj.
+
+  const getUsers = async () => {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users",
+      );
+
+      const data: User[] = await response.json();
+
+      setUsers(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // for the filter logic
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  useEffect(() => {
+    getUsers();
+  }, [filteredUsers]);
+
   return (
     <MySafeAreaView color="#1A1A1D">
       <View style={styles.conatiner}>
@@ -32,6 +60,18 @@ export default function Index() {
             </LinearGradient>
           </View>
         </View>
+
+        {/* Item */}
+        <FlatList
+          data={filteredUsers}
+          // horizontal
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <UserCard user={item} />}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No item found</Text>
+          }
+        />
       </View>
     </MySafeAreaView>
   );
@@ -45,6 +85,7 @@ const styles = StyleSheet.create({
   },
   searcBox: {
     marginTop: 40,
+    marginBottom: 10,
   },
   textWrapper: {
     marginBottom: 10,
@@ -67,5 +108,12 @@ const styles = StyleSheet.create({
   gradientBorder: {
     borderRadius: 24,
     padding: 2,
+  },
+  emptyText: {
+    color: "#F64A31",
+    textAlign: "center",
+    marginTop: 40,
+    fontFamily: fontFamily.regular,
+    fontSize: 16,
   },
 });
