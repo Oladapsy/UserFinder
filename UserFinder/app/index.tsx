@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import MySafeAreaView from "@/components/common/MySafeAreaView";
-import { Text, View, StyleSheet, TextInput, FlatList } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { fontFamily } from "@/theme/fontFamily";
 import { LinearGradient } from "expo-linear-gradient";
 import UserCard from "@/components/user/UserCard";
 import { User } from "@/types/user";
 
 export default function Index() {
+  const [isLoading, setLoading] = useState(true);
   const [search, setSearch] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]); // get the [{},{},{}] arry of obj.
 
@@ -21,6 +29,8 @@ export default function Index() {
       setUsers(data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,16 +72,20 @@ export default function Index() {
         </View>
 
         {/* Item */}
-        <FlatList
-          data={filteredUsers}
-          // horizontal
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <UserCard user={item} />}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No item found</Text>
-          }
-        />
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={filteredUsers}
+            // horizontal
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <UserCard user={item} />}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No item found</Text>
+            }
+          />
+        )}
       </View>
     </MySafeAreaView>
   );
