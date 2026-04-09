@@ -30,7 +30,7 @@ export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="user/[id]/index" options={{ headerShown: true }} />
+      <Stack.Screen name="user/[id]/index" options={{ headerShown: false }} />
     </Stack>
   );
 }
