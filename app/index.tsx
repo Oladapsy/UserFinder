@@ -37,7 +37,7 @@ export default function Index() {
 
   useEffect(() => {
     getUsers();
-  }, [filteredUsers]);
+  }, []);
 
   return (
     <MySafeAreaView color="#1A1A1D">
