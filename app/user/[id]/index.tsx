@@ -6,16 +6,19 @@ import MySafeAreaView from "@/components/common/MySafeAreaView";
 import UserIcon from "@/assets/svg/User.svg";
 import { fontFamily } from "@/theme/fontFamily";
 import BackIcon from "@/assets/svg/epBack.svg";
+import { getUserById } from "@/api/userApi";
 
 export default function UserDetails() {
   const { id } = useLocalSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
+  const fetchUser = async () => {
+    const data = await getUserById(id);
+    setUser(data);
+  };
   useEffect(() => {
-    fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-      .then((res) => res.json())
-      .then(setUser);
+    fetchUser();
   }, []);
 
   if (!user) return <Text style={style.text}>Loading...</Text>;

@@ -12,6 +12,7 @@ import { fontFamily } from "@/theme/fontFamily";
 import { LinearGradient } from "expo-linear-gradient";
 import UserCard from "@/components/user/UserCard";
 import { User } from "@/types/user";
+import { getAllUsers } from "@/api/userApi";
 
 export default function Index() {
   const [isLoading, setLoading] = useState(true);
@@ -20,12 +21,7 @@ export default function Index() {
 
   const getUsers = async () => {
     try {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/users",
-      );
-
-      const data: User[] = await response.json();
-
+      const data = await getAllUsers();
       setUsers(data);
     } catch (error) {
       console.log(error);
@@ -82,7 +78,7 @@ export default function Index() {
             renderItem={({ item }) => <UserCard user={item} />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>No item found</Text>
+              <Text style={styles.emptyText}>No User Found</Text>
             }
           />
         )}
