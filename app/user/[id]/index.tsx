@@ -1,56 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { User } from "@/types/user";
 import MySafeAreaView from "@/components/common/MySafeAreaView";
 import UserIcon from "@/assets/svg/User.svg";
 import { fontFamily } from "@/theme/fontFamily";
 import BackIcon from "@/assets/svg/epBack.svg";
 import { getUserById } from "@/api/userApi";
+import { useQuery } from "@tanstack/react-query";
 
 export default function UserDetails() {
   const { id } = useLocalSearchParams();
-  const [user, setUser] = useState<User | null>(null);
+  const userId = Array.isArray(id) ? id[0] : id;
   const router = useRouter();
 
-  const fetchUser = async () => {
-    const data = await getUserById(id);
-    setUser(data);
-  };
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getUserById(userId),
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 5, // 5 minutes stale time
+  });
 
-  if (!user) return <Text style={style.text}>Loading...</Text>;
+  if (isLoading) {
+    return (
+      <MySafeAreaView color="#18181B">
+        <Text style={styles.text}>Loading...</Text>
+      </MySafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <MySafeAreaView color="#1A1A1D">
+        <Text style={styles.emptyText}>User details cannot be fetched</Text>
+      </MySafeAreaView>
+    );
+  }
+  if (!user) {
+    return (
+      <MySafeAreaView color="#18181B">
+        <Text style={styles.emptyText}>User not found</Text>
+      </MySafeAreaView>
+    );
+  }
 
   return (
     <MySafeAreaView color="#18181B">
-      <View style={style.container}>
+      <View style={styles.container}>
         <TouchableOpacity
-          style={style.backButton}
+          style={styles.backButton}
           onPress={() => router.back()}
         >
           <BackIcon width={18} height={18} color="white" />
-          <Text style={style.backText}> Back</Text>
+          <Text style={styles.backText}> Back</Text>
         </TouchableOpacity>
 
         <UserIcon width={200} height={200} color="#19A1BE" />
-        <Text style={style.text}>Name: {user.name}</Text>
-        <Text style={style.text}>Username: {user.username}</Text>
-        <Text style={style.text}>Email: {user.email}</Text>
-        <Text style={style.text}>Phone: {user.phone}</Text>
-        <Text style={style.text}>Website: {user.website}</Text>
-        <Text style={style.text}>City: {user.address.city}</Text>
-        <Text style={style.text}>Street: {user.address.street}</Text>
-        <Text style={style.text}>Company: {user.company.name}</Text>
-        <Text style={style.text}>{user.company.catchPhrase}</Text>
-        <Text style={style.text}>{user.company.bs}</Text>
+        <Text style={styles.text}>Name: {user.name}</Text>
+        <Text style={styles.text}>Username: {user.username}</Text>
+        <Text style={styles.text}>Email: {user.email}</Text>
+        <Text style={styles.text}>Phone: {user.phone}</Text>
+        <Text style={styles.text}>Website: {user.website}</Text>
+        <Text style={styles.text}>City: {user.address?.city}</Text>
+        <Text style={styles.text}>Street: {user.address?.street}</Text>
+        <Text style={styles.text}>Company: {user.company?.name}</Text>
+        <Text style={styles.text}>{user.company?.bs}</Text>
       </View>
     </MySafeAreaView>
   );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: "#18181B",
     flex: 1,
@@ -74,5 +97,12 @@ const style = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontFamily: fontFamily.bold,
+  },
+  emptyText: {
+    color: "#F64A31",
+    textAlign: "center",
+    marginTop: 40,
+    fontFamily: fontFamily.regular,
+    fontSize: 16,
   },
 });

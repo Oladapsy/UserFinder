@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MySafeAreaView from "@/components/common/MySafeAreaView";
 import {
   Text,
@@ -11,33 +11,34 @@ import {
 import { fontFamily } from "@/theme/fontFamily";
 import { LinearGradient } from "expo-linear-gradient";
 import UserCard from "@/components/user/UserCard";
-import { User } from "@/types/user";
 import { getAllUsers } from "@/api/userApi";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Index() {
-  const [isLoading, setLoading] = useState(true);
   const [search, setSearch] = useState<string>("");
-  const [users, setUsers] = useState<User[]>([]); // get the [{},{},{}] arry of obj.
 
-  const getUsers = async () => {
-    try {
-      const data = await getAllUsers();
-      setUsers(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    data: users = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: getAllUsers,
+    staleTime: 1000 * 60 * 5, // 5 minutes stale time
+  });
 
   // for the filter logic
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  useEffect(() => {
-    getUsers();
-  }, []);
+  if (error) {
+    return (
+      <MySafeAreaView color="#1A1A1D">
+        <Text style={styles.emptyText}>No users found</Text>
+      </MySafeAreaView>
+    );
+  }
 
   return (
     <MySafeAreaView color="#1A1A1D">
