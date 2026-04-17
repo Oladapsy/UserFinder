@@ -2,6 +2,12 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+// tanstack setup => import the provider to wrap the app and instantiate the client and pass as prop
+// to the provider
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// creating a client
+const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,9 +34,11 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="user/[id]/index" options={{ headerShown: false }} />
-    </Stack>
+    <QueryClientProvider client={queryClient}>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="user/[id]/index" options={{ headerShown: false }} />
+      </Stack>
+    </QueryClientProvider>
   );
 }
