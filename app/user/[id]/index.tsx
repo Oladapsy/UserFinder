@@ -5,24 +5,14 @@ import MySafeAreaView from "@/components/common/MySafeAreaView";
 import UserIcon from "@/assets/svg/User.svg";
 import { fontFamily } from "@/theme/fontFamily";
 import BackIcon from "@/assets/svg/epBack.svg";
-import { getUserById } from "@/api/userApi";
-import { useQuery } from "@tanstack/react-query";
+import { useGetUserByIdQuery } from "@/api/userApi";
 
 export default function UserDetails() {
   const { id } = useLocalSearchParams();
   const userId = Array.isArray(id) ? id[0] : id;
   const router = useRouter();
 
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getUserById(userId),
-    enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // 5 minutes stale time
-  });
+  const { data: user, isLoading, error } = useGetUserByIdQuery(userId as string)
 
   if (isLoading) {
     return (
