@@ -2,12 +2,9 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-// tanstack setup => import the provider to wrap the app and instantiate the client and pass as prop
-// to the provider
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// creating a client
-const queryClient = new QueryClient();
+// removed tanstack and the wrap app with provider and pass store to it from the configured store:
+import { Provider } from "react-redux";
+import { store } from "@/api/store";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,11 +31,11 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="user/[id]/index" options={{ headerShown: false }} />
       </Stack>
-    </QueryClientProvider>
+      </Provider>
   );
 }
