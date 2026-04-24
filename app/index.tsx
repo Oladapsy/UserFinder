@@ -17,12 +17,20 @@ import { useGetUsersQuery } from "@/api/userApi";
 export default function Index() {
   const [search, setSearch] = useState<string>("");
 // use the query
-  const { data: users = [], isLoading } = useGetUsersQuery();
+  const { data: users = [], isLoading, error } = useGetUsersQuery();
 
   // for the filter logic
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  if (error) {
+    return (
+      <MySafeAreaView color="#1A1A1D">
+        <Text style={styles.emptyText}>No users found</Text>
+      </MySafeAreaView>
+    );
+  }
 
   return (
     <MySafeAreaView color="#1A1A1D">
