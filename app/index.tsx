@@ -11,8 +11,6 @@ import {
 import { fontFamily } from "@/theme/fontFamily";
 import { LinearGradient } from "expo-linear-gradient";
 import UserCard from "@/components/user/UserCard";
-import { getAllUsers } from "@/api/userApi";
-import { useQuery } from "@tanstack/react-query";
 
 export default function Index() {
   const [search, setSearch] = useState<string>("");
