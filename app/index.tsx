@@ -11,32 +11,18 @@ import {
 import { fontFamily } from "@/theme/fontFamily";
 import { LinearGradient } from "expo-linear-gradient";
 import UserCard from "@/components/user/UserCard";
+import { useGetUsersQuery } from "@/api/userApi";
+
 
 export default function Index() {
   const [search, setSearch] = useState<string>("");
-
-  const {
-    data: users = [],
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: getAllUsers,
-    staleTime: 1000 * 60 * 5, // 5 minutes stale time
-  });
+// use the query
+  const { data: users = [], isLoading } = useGetUsersQuery();
 
   // for the filter logic
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(search.toLowerCase()),
   );
-
-  if (error) {
-    return (
-      <MySafeAreaView color="#1A1A1D">
-        <Text style={styles.emptyText}>No users found</Text>
-      </MySafeAreaView>
-    );
-  }
 
   return (
     <MySafeAreaView color="#1A1A1D">
